@@ -15,6 +15,7 @@ const ProductListItem = ({ product }: ProductListItemProps) => {
       <Image
         source={{ uri: product.image || defaultPizzaImage }}
         style={styles.image}
+        resizeMode="contain" // add this to make sure the aspect ratio is maintained and shows the entire image (default is cover which crops the image)
       />
       <Text style={styles.title}>{product.name}</Text>
       <Text style={styles.price}>${product.price}</Text>
@@ -29,6 +30,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 10,
     borderRadius: 20,
+    flex: 1,
+    maxWidth: '50%', // add this if you have 2 columns and don't want an odd number to take up the whole row
   },
   title: {
     fontSize: 18,
