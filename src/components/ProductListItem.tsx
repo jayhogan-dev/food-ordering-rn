@@ -1,6 +1,7 @@
 import Colors from '@/src/constants/Colors';
-import { StyleSheet, View, Text, Image } from 'react-native';
+import { StyleSheet, Text, Image, Pressable } from 'react-native';
 import { Product } from '../types';
+import { Link } from 'expo-router';
 
 export const defaultPizzaImage =
   'https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/default.png';
@@ -11,15 +12,18 @@ type ProductListItemProps = {
 
 const ProductListItem = ({ product }: ProductListItemProps) => {
   return (
-    <View style={styles.container}>
-      <Image
-        source={{ uri: product.image || defaultPizzaImage }}
-        style={styles.image}
-        resizeMode="contain" // add this to make sure the aspect ratio is maintained and shows the entire image (default is cover which crops the image)
-      />
-      <Text style={styles.title}>{product.name}</Text>
-      <Text style={styles.price}>${product.price}</Text>
-    </View>
+    <Link href={`/menu/${product.id}`} asChild>
+      {/* A View doesn't have an onPress event so replace with Pressable */}
+      <Pressable style={styles.container}>
+        <Image
+          source={{ uri: product.image || defaultPizzaImage }}
+          style={styles.image}
+          resizeMode="contain" // add this to make sure the aspect ratio is maintained and shows the entire image (default is cover which crops the image)
+        />
+        <Text style={styles.title}>{product.name}</Text>
+        <Text style={styles.price}>${product.price}</Text>
+      </Pressable>
+    </Link>
   );
 };
 
