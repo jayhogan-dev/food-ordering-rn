@@ -1,11 +1,15 @@
 import Button from '@/src/components/Button';
 import { defaultPizzaImage } from '@/src/components/ProductListItem';
 import Colors from '@/src/constants/Colors';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useInsertProduct } from '@/src/api/products';
+import {
+  useInsertProduct,
+  useProduct,
+  useUpdateProduct,
+} from '@/src/api/products';
 
 const CreateProductScreen = () => {
   const [name, setName] = useState('');
@@ -13,12 +17,30 @@ const CreateProductScreen = () => {
   const [image, setImage] = useState<string | null>(null);
   const [errors, setErrors] = useState('');
 
-  const { id } = useLocalSearchParams();
-  const isUpdating = !!id;
+  const { id: idString } = useLocalSearchParams();
+
+  const isCreating = idString === undefined;
+  const isUpdating = !isCreating && !!idString;
+
+  const id = isUpdating
+    ? parseFloat(typeof idString === 'string' ? idString : idString[0])
+    : null;
 
   const { mutate: insertProduct } = useInsertProduct();
+  const { mutate: updateProduct } = useUpdateProduct();
+  const { data: updatingProduct } = isUpdating
+    ? useProduct(id as number)
+    : { data: null };
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (updatingProduct) {
+      setName(updatingProduct.name);
+      setPrice(updatingProduct.price.toString());
+      setImage(updatingProduct.image);
+    }
+  }, [updatingProduct]);
 
   const resetFields = () => {
     setName('');
@@ -75,10 +97,21 @@ const CreateProductScreen = () => {
       return;
     }
 
-    console.warn('Update product');
-
-    // after values are submitted
-    resetFields();
+    updateProduct(
+      {
+        id,
+        name,
+        price: parseFloat(price),
+        image,
+      },
+      {
+        onSuccess: () => {
+          // after values are submitted
+          resetFields();
+          router.back();
+        },
+      },
+    );
   };
 
   const pickImage = async () => {
