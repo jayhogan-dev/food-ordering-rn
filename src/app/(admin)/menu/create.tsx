@@ -6,6 +6,7 @@ import { StyleSheet, Text, View, TextInput, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import {
+  useDeleteProduct,
   useInsertProduct,
   useProduct,
   useUpdateProduct,
@@ -31,6 +32,7 @@ const CreateProductScreen = () => {
   const { data: updatingProduct } = isUpdating
     ? useProduct(id as number)
     : { data: null };
+  const { mutate: deleteProduct } = useDeleteProduct();
 
   const router = useRouter();
 
@@ -131,7 +133,15 @@ const CreateProductScreen = () => {
   };
 
   const onDelete = () => {
-    console.warn('Delete product');
+    if (id !== null) {
+      deleteProduct(id, {
+        onSuccess: () => {
+          router.replace('/(admin)');
+        },
+      });
+    } else {
+      console.error('Cannot delete product: ID is null');
+    }
   };
 
   const confirmDelete = () => {
