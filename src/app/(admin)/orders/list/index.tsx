@@ -1,9 +1,6 @@
 import { useAdminOrderList } from '@/src/api/orders';
 import { useInsertOrderSubscription } from '@/src/api/orders/subscriptions';
 import OrderListItem from '@/src/components/OrderListItem';
-import { supabase } from '@/src/lib/supabase';
-import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
 import { StyleSheet, Text, FlatList, ActivityIndicator } from 'react-native';
 
 const OrdersScreen = () => {
